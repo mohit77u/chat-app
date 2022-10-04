@@ -1,0 +1,56 @@
+// Fonts
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800&display=swap');
+
+// Variables
+@import 'variables';
+
+html{
+    font-family: 'Poppins', sans-serif;
+}
+
+.home-page{
+    background: url('../images/bg-galaxy.jpg');
+    background-position: center;
+    background-size: cover;
+    // backdrop-filter: blur(100px);
+}
+
+::-webkit-scrollbar{
+    width: 6px;
+    background: rgba(128,128,128,0.2);
+}
+::-webkit-scrollbar-thumb{
+    height: 6px;
+    border-radius: 20px;
+    background: #414c8e;
+}
+
+.main-screen{
+    ::-webkit-scrollbar{
+        display: none;
+    }
+}
+
+.message-date{
+    position: relative;
+    &::after{
+        content: '';
+        width: 46%;
+        height: 1px;
+        background-color: rgba($color: #ffffff, $alpha: 0.15); 
+        margin-left: 10px;
+        position: absolute;
+        left: 0;
+        top: 8px;
+    }
+    &::before{
+        content: '';
+        position: absolute;
+        width: 46%;
+        height: 1px;
+        right: 0;
+        top: 8px;
+        background-color: rgba($color: #ffffff, $alpha: 0.15); 
+        margin-right: 10px;
+    }
+}
