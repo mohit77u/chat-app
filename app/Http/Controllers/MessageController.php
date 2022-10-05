@@ -110,7 +110,7 @@ class MessageController extends Controller
         $messages = $messages->sortBy('created_at');
         $messages = $messages->groupBy(function($item)
         {
-          return date('d M Y', strtotime($item['created_at']));
+          return date('d F Y', strtotime($item['created_at']));
         });
 
         return response([
