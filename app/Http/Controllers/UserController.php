@@ -49,6 +49,10 @@ class UserController extends Controller
             ]);
             
             $input['password'] = Hash::make($request->password);
+        } 
+        else 
+        {
+            $input['password'] = $user->password;
         }
 
         if(isset($request->avatar))
@@ -72,8 +76,6 @@ class UserController extends Controller
             $input['avatar'] = $filePath;
             
         }
-
-        $input = $request->except('password_confirmation');
 
         // store in db table
         $user->update($input);

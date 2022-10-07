@@ -2,11 +2,11 @@
     <div class="home-page min-h-screen max-h-screen overflow-auto">
         <section class="min-h-screen backdrop-blur-[50px]">
             <div class="flex flex-wrap gap-y-4">
-                <div :class="[menu ? 'sm:w-96 w-[300px] fixed top-o left-0 z-50 max-h-screen h-full overflow-y-auto' : 'hidden md:block fixed top-o left-0 z-50 max-h-screen h-full overflow-y-auto']">
-                    <div class="top-bar sticky top-0 z-20 py-4 gradient-bg px-4">
+                <div :class="[menu ? 'fixed top-o left-0 z-50 max-h-screen h-full overflow-y-auto' : 'hidden md:block fixed top-o md:left-0 left-[-100%] z-50 max-h-screen h-full overflow-y-auto', 'border-r border-white/10 w-64 transition-all duration-500']">
+                    <div class="top-bar sticky top-0 z-20 py-2 gradient-bg px-4">
                         <div class="flex justify-between items-center">
                             <div class="user-icon">
-                                <img src="/images/logo.svg" alt="logo" class="max-w-[50px]">
+                                <img src="/images/logo.svg" alt="logo" class="max-w-[40px]">
                             </div>
                             <div class="contact-book-icon md:hidden block">
                                 <img src="/images/icon-close.png" alt="close" class="max-w-[40px] cursor-pointer" @click="menu = !menu">
@@ -16,28 +16,30 @@
                             </div> -->
                         </div>
                     </div>
-                    <div class="message-box py-5 px-4">
-                        <div class="gradient-bg cursor-pointer my-3" v-for="(user,index) in users.slice(1,-1)" :key="index">
-                            <div class="main-message flex rounded px-4 py-2" @click="getUserMessage(user)">
+                    <label class="block text-slate-200 txt-md px-4 mb-4 py-2 border-b border-white/20 ">Contacts</label>
+                    <div class="message-box pb-5">
+                        <div class="cursor-pointer my-2" v-for="(user,index) in users.slice(1,-1)" :key="index">
+                            <div class="main-message flex rounded px-4" @click="getUserMessage(user)">
                                 <div class="left mr-2 w-2/12">
-                                    <img src="/images/icon-boy.png" alt="user" class="max-w-[65px] max-h-[65px] rounded-full">
+                                    <img src="/images/user-icon.png" alt="user" class="max-w-[30px] max-h-[65px] rounded-full">
+                                    <!-- <img src="/images/icon-boy.png" alt="user" class="max-w-[30px] max-h-[65px] rounded-full"> -->
                                 </div>
-                                <div class="right mt-1 w-10/12 pl-3">
+                                <div class="right mt-1 w-10/12">
                                     <div class="message flex justify-between">
-                                        <div class="name-message w-9/12">
-                                            <h5 class="text-white text-md text-ellipsis sm:max-w-[170px] max-w-[110px] whitespace-nowrap overflow-hidden">{{ user.name }}</h5>
-                                            <p class="text-gray-400 text-sm text-ellipsis sm:max-w-[170px] max-w-[110px] whitespace-nowrap overflow-hidden">A chat app with a little bit of everything</p>
+                                        <div class="name-message w-full">
+                                            <h5 class="text-white/60 hover:text-white transition-all duration-150 text-sm text-ellipsis sm:max-w-[170px] max-w-[110px] whitespace-nowrap overflow-hidden">{{ user.name }}</h5>
+                                            <!-- <p class="text-gray-400 text-sm text-ellipsis sm:max-w-[170px] max-w-[110px] whitespace-nowrap overflow-hidden">A chat app with a little bit of everything</p> -->
                                         </div>
-                                        <div class="w-3/12">
+                                        <!-- <div class="w-3/12">
                                             <p class="text-sm text-right text-gray-400 whitespace-nowrap">01:25 PM</p>
-                                        </div>
+                                        </div> -->
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="md:ml-96 w-full p-4 md:px-12 px-4 relative min-h-screen main-screen overflow-x-hidden">
+                <div class="md:ml-64 w-full p-4 md:px-12 px-4 relative min-h-screen main-screen overflow-x-hidden">
                     <div :class="[currentUser ? 'justify-between' : 'justify-end', 'top-main flex items-center sticky top-0 z-20 min-h-[50px]']">
                         <div class="flex items-start" v-if="currentUser">
                             <div class="right flex items-start">

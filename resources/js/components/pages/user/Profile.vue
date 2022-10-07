@@ -1,6 +1,6 @@
 <template>
     <div class="profile pb-4 pt-24">
-        <div class="lg:w-8/12 w-full mx-auto">
+        <div class="lg:w-6/12 w-full mx-auto">
             <div class="p-6 rounded gradient-bg border border-white/10 max-h-[650px] overflow-auto">
                 <h2 class="text-white text-2xl font-bold mb-3">Profile</h2>
                 <h3 class="text-slate-200 text-xl mb-3">Account Information</h3>
@@ -34,7 +34,7 @@
                         </div>
                     </div>
                     <div class="my-3">
-                        <img :src="previewImage" alt="avatar" v-if="previewImage" />
+                        <img :src="previewImage ? previewImage : user.avatar" alt="avatar" v-if="previewImage || user.avatar" />
                     </div>
                     <div class="form-group my-6">
                         <button type="submit" class="w-auto text-sm bg-lime-500 text-center text-white px-5 py-2 rounded flex justify-center items-center" :disabled="loading">
