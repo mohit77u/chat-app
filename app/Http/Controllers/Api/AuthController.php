@@ -22,16 +22,31 @@ class AuthController extends Controller
             'password'                   => 'required',
             'password_confirmation'      => 'required|same:password',
         ]);
-
+        
         // bycrypt password
         $input['password'] = Hash::make($input['password']);
 
-        // store in db table
-        User::create([
-            'name'      => $input['name'],
-            'email'     => $input['email'],
-            'password'  => $input['password'],
-        ]);
+        // check if user exists or not
+        $user = User::where('email', $input['email'])->first();
+
+        // if user exists update user else create new user
+        if($user != null)
+        {
+            $user->update([
+                'name'              => $input['name'],
+                'email'             => $input['email'],
+                'password'          => $input['password'],
+            ]);
+        }
+        else 
+        {
+            // store in db table
+            User::create([
+                'name'              => $input['name'],
+                'email'             => $input['email'],
+                'password'          => $input['password'],
+            ]);
+        }
 
         // return response
         return response([

@@ -55,7 +55,7 @@ class UserController extends Controller
             $input['password'] = $user->password;
         }
 
-        if(isset($request->avatar))
+        if($request->file('avatar'))
         {
             
             // requested file

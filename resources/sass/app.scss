@@ -4,28 +4,33 @@
 // Variables
 @import 'variables';
 
-html{
+html {
     // font-family: 'Poppins', sans-serif;
-    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
 }
 
-::-webkit-scrollbar{
+::-webkit-scrollbar {
     width: 6px;
-    background: rgba(128,128,128,0.2);
-}
-::-webkit-scrollbar-thumb{
     height: 6px;
+    background: rgba(128, 128, 128, 0.2);
+}
+
+::-webkit-scrollbar-thumb {
     border-radius: 20px;
     background: rgba(132, 204, 22, 0.7);
 }
 
-.fade-enter-active, .fade-leave-active {
-    transition: opacity .5s;
+.fade-enter-active,
+.fade-leave-active {
+    transition: opacity 0s;
 }
-.fade-enter, .fade-leave-to{
+
+.fade-enter,
+.fade-leave-to {
     opacity: 0;
 }
-.app{
+
+.app {
     background-image: url('../images/galaxy.jpg');
     // background-color: rgb(2, 0, 5);
     background-position: center;
@@ -33,38 +38,127 @@ html{
 }
 
 
-.main-screen{
-    ::-webkit-scrollbar{
+.main-screen {
+    ::-webkit-scrollbar {
         display: none;
     }
 }
 
-.message-date{
+.message-date {
     position: relative;
-    &::after{
+
+    &::after {
         content: '';
         width: 45%;
         height: 1px;
-        background-color: rgba($color: #ffffff, $alpha: 0.15); 
+        background-color: rgba($color: #ffffff, $alpha: 0.15);
         margin-left: 10px;
         position: absolute;
         left: 0;
         top: 8px;
     }
-    &::before{
+
+    &::before {
         content: '';
         position: absolute;
         width: 45%;
         height: 1px;
         right: 0;
         top: 8px;
-        background-color: rgba($color: #ffffff, $alpha: 0.15); 
+        background-color: rgba($color: #ffffff, $alpha: 0.15);
         margin-right: 10px;
     }
 }
 
-.gradient-bg{
-    background: linear-gradient(rgba(255,255,255,0.1), rgba(255,255,255,0.1));
-    border: 1px solid rgba(255,255,255,0.1);
+.gradient-bg {
+    background: linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1));
+    border: 1px solid rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(15px);
+}
+
+.main-loader{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    z-index: 9999;
+    background: $blue;
+    backdrop-filter: blur(40px);
+}
+
+.cssLoader17 {
+    position: relative;
+    width: 2.5em;
+    height: 2.5em;
+    transform: rotate(165deg);
+}
+
+.cssLoader17:before,
+.cssLoader17:after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    display: block;
+    width: 0.5em;
+    height: 0.5em;
+    border-radius: 0.25em;
+    transform: translate(-50%, -50%);
+}
+
+.cssLoader17:before {
+    animation: before 2s infinite;
+}
+
+.cssLoader17:after {
+    animation: after 2s infinite;
+}
+
+@keyframes before {
+    0% {
+        width: 0.5em;
+        box-shadow: 1em -0.5em rgb(255, 115, 0), -1em 0.5em rgba(111, 202, 220, 0.75);
+    }
+
+    35% {
+        width: 2.5em;
+        box-shadow: 0 -0.5em rgba(255, 115, 0, 0.75), 0 0.5em rgba(111, 202, 220, 0.75);
+    }
+
+    70% {
+        width: 0.5em;
+        box-shadow: -1em -0.5em rgba(255, 115, 0, 0.75), 1em 0.5em rgba(111, 202, 220, 0.75);
+    }
+
+    100% {
+        box-shadow: 1em -0.5em rgba(255, 115, 0, 0.75), -1em 0.5em rgba(111, 202, 220, 0.75);
+    }
+}
+
+@keyframes after {
+    0% {
+        height: 0.5em;
+        box-shadow: 0.5em 1em rgba(132, 204, 22, 0.75), -0.5em -1em rgba(245, 188, 0, 0.75);
+    }
+
+    35% {
+        height: 2.5em;
+        box-shadow: 0.5em 0 rgba(132, 204, 22, 0.75), -0.5em 0 rgba(245, 188, 0, 0.75);
+    }
+
+    70% {
+        height: 0.5em;
+        box-shadow: 0.5em -1em rgba(132, 204, 22, 0.75), -0.5em 1em rgba(245, 188, 0, 0.75);
+    }
+
+    100% {
+        box-shadow: 0.5em 1em rgba(132, 204, 22, 0.75), -0.5em -1em rgba(245, 188, 0, 0.75);
+    }
+}
+
+.loader {
+    position: absolute;
+    top: calc(50% - 1.25em);
+    left: calc(50% - 1.25em);
 }

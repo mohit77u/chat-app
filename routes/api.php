@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\ContactListController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -39,4 +40,9 @@ Route::controller(AuthController::class)->group(function(){
 Route::controller(MessageController::class)->group(function(){
     Route::post('message', 'store');
     Route::post('user-messages', 'userMessages');
+});
+
+Route::controller(ContactListController::class)->group(function(){
+    Route::get('contact-list', 'index')->middleware('auth:api');
+    Route::post('add-contact', 'store');
 });

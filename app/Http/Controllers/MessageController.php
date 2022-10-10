@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Message;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 
 class MessageController extends Controller
@@ -43,6 +44,40 @@ class MessageController extends Controller
         ]);
 
         Message::create($message);
+
+        $attachments = $request->attachments;
+       
+        if(isset($attachments))
+        {
+
+            $extension = $attachments->getClientOriginalExtension();
+            // dd($extension);
+            $baseNamefile = pathinfo($attachments->getClientOriginalName(), PATHINFO_FILENAME);
+            $name = Str::slug($baseNamefile, '-');
+            $fileName = $name.'.'.$extension;
+            $destinationFilePath = '/uploads/messages/attachements/';
+           
+            // file path
+            $filePath = $destinationFilePath . $fileName;
+
+            $attachments->move(public_path($destinationFilePath),$fileName);
+
+            if($extension == 'png' || $extension == 'jpg')
+            {
+                $type = 'image';
+            } 
+            elseif($extension == 'pdf' || $extension == 'docs')
+            {
+                $type = 'docs';
+            } 
+            // store value
+            Message::create([
+                'from_user_id'  => $message['from_user_id'],
+                'to_user_id'    => $message['to_user_id'],
+                'type'          => $type,
+                'message'       => $filePath,
+            ]);
+        }
 
         return response([
             'message' => 'Messsage sent successfully',

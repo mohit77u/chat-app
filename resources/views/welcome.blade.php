@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="shortcut icon" href="/images/favicon.svg" type="image/x-icon">
 
-        <title>Chat App</title>
+        <title>Chat App - The Real Thing</title>
 
         @vite('resources/sass/app.scss')
 

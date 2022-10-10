@@ -39,28 +39,17 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
   var token = localStorage.getItem('token');
   // if meta required but not logged in
-  if (to.meta.authRequired && !to.meta.guest && token === null) 
-  {
-    next({path: '/login'})
+  if (to.meta.authRequired && !to.meta.guest && token === null) {
+    next({ path: '/login' })
   }
   // if meta not required but logged in
-  else if(!to.meta.authRequired && to.meta.guest && token)
-  {
-    next({path: '/'})
+  else if (!to.meta.authRequired && to.meta.guest && token) {
+    next({ path: '/' })
   }
-  else
-  {
+  else {
     next(true)
   }
 
-  // if (!to.meta.authRequired && token) 
-  // {
-  //   next(true)
-  // }
-  // else 
-  // {
-  //   next({path: '/login'})
-  // }
 })
 
 export default router
