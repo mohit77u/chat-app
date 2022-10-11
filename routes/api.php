@@ -32,6 +32,7 @@ Route::controller(UserController::class)->group(function(){
 Route::controller(AuthController::class)->group(function(){
     Route::post('register', 'register');
     Route::post('login', 'login');
+    Route::post('logout', 'logout')->middleware('auth:api');
     Route::post('forgot-password', 'forgotPassword');
     Route::post('reset-password', 'resetPassword');
 });

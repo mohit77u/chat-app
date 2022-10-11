@@ -61,7 +61,9 @@ export default {
             axios.post('/api/add-contact', this.contact)
             .then(res=>{
                 this.loading = false
+                this.$emit('getContactList', true)
                 this.Reset()
+                this.getUserDetails()
                 this.toast = 'Contact added successfully.'
                 setTimeout(()=>{
                     this.toast = false
@@ -79,6 +81,7 @@ export default {
                 }, 4000)
                 
             })
+
         }, 
         getUserDetails(){
             const token = localStorage.getItem('token');

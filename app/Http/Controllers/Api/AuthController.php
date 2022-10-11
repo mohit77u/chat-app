@@ -78,6 +78,10 @@ class AuthController extends Controller
         $user = Auth::user();
         $token = $user->createToken($user->name);
 
+        $user->update([
+            'token' => $token->accessToken,
+        ]);
+
         return response([
             'id' => $user->id,
             'name' => $user->name,
@@ -89,6 +93,24 @@ class AuthController extends Controller
         ], 200);
     }
 
+    // forgot password
+    public function logout(Request $request)
+    {
+        $token = $request->token;
+
+        $user = User::where('token', $token)->first();
+
+        $user->update([
+            'token' => '',
+        ]);
+
+        return response([
+            'message' => 'User successfully logged out'
+        ], 200);
+
+    }
+
+    // forgot password
     public function forgotPassword(Request $request)
     {
         $request->validate([
@@ -122,6 +144,7 @@ class AuthController extends Controller
         ], 200);
     }
 
+    // forgot password
     public function resetPassword(Request $request)
     {
         $request->validate([

@@ -140,25 +140,25 @@
                 </transition>
 
                 <!-- profile -->
-                <transition name="fade">
+                <!-- <transition name="fade"> -->
                     <div v-if="step === 'profile'">
                         <Profile />
                     </div>
-                </transition>
+                <!-- </transition> -->
 
                 <!-- add contact -->
-                <transition name="fade">
+                <!-- <transition name="fade"> -->
                     <div v-if="step === 'add-contact'">
-                        <AddContact />
+                        <AddContact @getContactList="getContactList"/>
                     </div>
-                </transition>
+                <!-- </transition> -->
 
                 <!-- create group -->
-                <transition name="fade">
+                <!-- <transition name="fade"> -->
                     <div v-if="step === 'create-group'">
                         <CreateGroup :users="users" />
                     </div>
-                </transition>
+                <!-- </transition> -->
 
                 <!-- loader -->
                 <div class="main-loader" v-if="loading">
@@ -307,6 +307,13 @@ export default {
             console.log(element)
             console.log(offsetHeight)
             element.scrollTop = offsetHeight;
+        },
+        getContactList(refresh){
+            console.log(refresh)
+            if(refresh){
+                console.log(refresh)
+                this.getUsers()
+            }
         }
     },
     mounted() {
