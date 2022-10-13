@@ -1,8 +1,8 @@
 <template>
-    <div class="profile pb-4 pt-24 animate__animated animate__fadeInRight min-h-[85vh]">
+     <div class="profile pb-4 pt-24 animate__animated animate__fadeInRight min-h-[85vh]">
         <div class="lg:w-6/12 w-full mx-auto">
             <div class="p-6 rounded gradient-bg border border-white/10 max-h-[650px] overflow-auto">
-                <h2 class="text-white text-2xl font-bold mb-3">Add New Contact</h2>
+                <h2 class="text-white text-2xl font-bold mb-3">Edit Contact</h2>
                 <h3 class="text-slate-200 text-xl mb-3">Contact Information</h3>
                 <form @submit.prevent="saveUserDetails" enctype="multipart/form-data">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -20,7 +20,7 @@
                     <div class="form-group my-6">
                         <button type="submit" class="w-auto text-sm bg-lime-500 text-center text-white px-5 py-2 rounded flex justify-center items-center" :disabled="loading">
                             <div class="w-5 h-5 rounded-full animate-spin border-4 border-solid border-white border-t-transparent shadow-md mr-2" v-if="loading"></div>
-                            <span v-else>Add to contacts</span> 
+                            <span v-else>Update contact</span> 
                         </button>
                     </div>
                 </form>
@@ -42,8 +42,8 @@
 
 <script>
 export default {
-    name: "AddContactPage",
-    props:['user'],
+    name: 'EditContacts',
+    props:['user', 'id'],
     data(){
         return{
             // user: {},
@@ -54,16 +54,22 @@ export default {
 
         }
     },
+    watch:{
+        id(newVal, oldVal){
+            if (oldVal != newVal){
+                this.getContact()
+            }
+        }
+    },
     methods:{
         saveUserDetails(){
             console.log(this.contact)
-            this.contact.user_one = this.user.id
             this.loading = true
-            axios.post('/api/add-contact', this.contact)
+            axios.post('/api/contact-list/' + this.id + '/update', this.contact)
             .then(res=>{
                 this.loading = false
                 this.$emit('getContactList', true)
-                this.Reset()
+                // this.Reset()
                 this.getUserDetails()
                 this.toast = 'Contact added successfully.'
                 setTimeout(()=>{
@@ -84,21 +90,15 @@ export default {
             })
 
         }, 
-        // getUserDetails(){
-        //     const token = localStorage.getItem('token');
-        //     const config = {
-        //         headers:{
-        //             'Authorization': 'Bearer ' + token,
-        //         }
-        //     }
-        //     axios.get('/api/user', config)
-        //     .then(res=>{
-        //         const user = res.data.user
-        //         this.user = user
-        //     }).catch(err=>[
-        //         console.log(err)
-        //     ])
-        // },
+        getContact(){
+            axios.get('/api/contact-list/' + this.id,)
+            .then(res=>{
+                const contact = res.data.contact
+                this.contact = contact
+            }).catch(err=>[
+                console.log(err)
+            ])
+        },
 
         // Reset
         Reset(){
@@ -106,8 +106,8 @@ export default {
         },
     },
     mounted(){
-        // this.getUserDetails()
-    }
-
+        this.getContact()
+    },
+    
 }
 </script>

@@ -22,7 +22,7 @@ class ContactListController extends Controller
             ->join('users AS U', 'U.id', '=', 'CL.user_two')
             ->where('CL.user_one', '=', $user->id)
             ->select([
-                'U.*', 'CL.display_name AS display_name'
+                'U.*', 'CL.display_name AS display_name', 'CL.id AS contactList_id'
             ])->get();
 
         // return response
@@ -68,6 +68,7 @@ class ContactListController extends Controller
                 'user_one'      => $input['user_one'],
                 'user_two'      => $user->id,
                 'display_name'  => $input['display_name'],
+                'mobile_number'  => $input['mobile_number'],
             ]);
 
             // return response
@@ -89,6 +90,7 @@ class ContactListController extends Controller
                 'user_one'      => $input['user_one'],
                 'user_two'      => $user->id,
                 'display_name'  => $input['display_name'],
+                'mobile_number'  => $input['mobile_number'],
             ]);
 
             // return response
@@ -109,7 +111,9 @@ class ContactListController extends Controller
      */
     public function show(ContactList $contactList)
     {
-        //
+        return response([
+            'contact' => $contactList
+        ]);
     }
 
     /**
@@ -120,7 +124,7 @@ class ContactListController extends Controller
      */
     public function edit(ContactList $contactList)
     {
-        //
+       
     }
 
     /**
@@ -132,7 +136,17 @@ class ContactListController extends Controller
      */
     public function update(Request $request, ContactList $contactList)
     {
-        //
+        $input = $request->validate([
+            'display_name'               => 'required',
+            'mobile_number'              => 'required',
+        ]);
+
+        $contactList->update($input);
+
+        // return response
+        return response([
+            'message' => 'User updated to contact list successfully.',
+        ], 200);
     }
 
     /**

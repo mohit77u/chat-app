@@ -62,9 +62,10 @@
 <script>
 export default {
     name: "ProfilePage",
+    props:['user'],
     data(){
         return{
-            user: {},
+            // user: {},
             previewImage: '',
             error: {},
             loading: false,
@@ -108,24 +109,24 @@ export default {
                 }, 4000)
             })
         }, 
-        getUserDetails(){
-            const token = localStorage.getItem('token');
-            const config = {
-                headers:{
-                    'Authorization': 'Bearer ' + token,
-                }
-            }
-            axios.get('/api/user', config)
-            .then(res=>{
-                const user = res.data.user
-                this.user = user
-            }).catch(err=>[
-                console.log(err)
-            ])
-        },
+        // getUserDetails(){
+        //     const token = localStorage.getItem('token');
+        //     const config = {
+        //         headers:{
+        //             'Authorization': 'Bearer ' + token,
+        //         }
+        //     }
+        //     axios.get('/api/user', config)
+        //     .then(res=>{
+        //         const user = res.data.user
+        //         this.user = user
+        //     }).catch(err=>[
+        //         console.log(err)
+        //     ])
+        // },
     },
     mounted(){
-        this.getUserDetails()
+        // this.getUserDetails()
     }
 
 }

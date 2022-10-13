@@ -43,13 +43,15 @@ class MessageController extends Controller
             'to_user_id' => 'required',
         ]);
 
-        Message::create($message);
+        if($request->message != 'null')
+        {
+            Message::create($message);
+        }
 
         $attachments = $request->attachments;
        
         if(isset($attachments))
         {
-
             $extension = $attachments->getClientOriginalExtension();
             // dd($extension);
             $baseNamefile = pathinfo($attachments->getClientOriginalName(), PATHINFO_FILENAME);
@@ -62,7 +64,7 @@ class MessageController extends Controller
 
             $attachments->move(public_path($destinationFilePath),$fileName);
 
-            if($extension == 'png' || $extension == 'jpg')
+            if($extension == 'png' || $extension == 'jpg' || $extension == 'jpeg' || $extension == 'svg')
             {
                 $type = 'image';
             } 
@@ -78,7 +80,6 @@ class MessageController extends Controller
                 'message'       => $filePath,
             ]);
         }
-
         return response([
             'message' => 'Messsage sent successfully',
         ]);

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\ChatGroupController;
 use App\Http\Controllers\ContactListController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\UserController;
@@ -46,4 +47,11 @@ Route::controller(MessageController::class)->group(function(){
 Route::controller(ContactListController::class)->group(function(){
     Route::get('contact-list', 'index')->middleware('auth:api');
     Route::post('add-contact', 'store');
+    Route::get('contact-list/{contactList}', 'show');
+    Route::post('contact-list/{contactList}/update', 'update');
+});
+
+Route::controller(ChatGroupController::class)->group(function(){
+    Route::get('groups', 'index')->middleware('auth:api');
+    Route::post('create-group', 'store');
 });

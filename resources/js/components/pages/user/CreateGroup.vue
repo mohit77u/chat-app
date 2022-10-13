@@ -4,22 +4,29 @@
             <div class="p-6 rounded gradient-bg border border-white/10 max-h-[650px] overflow-auto">
                 <h2 class="text-white text-2xl font-bold mb-3">Create Chat Group</h2>
                 <h3 class="text-slate-200 text-xl mb-3">Group Information</h3>
-                <form @submit.prevent="saveUserDetails" enctype="multipart/form-data">
+                <form @submit.prevent="saveGroupDetails" enctype="multipart/form-data">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        <div class="form-group col-span-2">
+                        <div class="form-group">
                             <label class="block mb-2 text-xs text-slate-300">Name</label>
-                            <input type="text" :class="[ error.display_name ? 'border-red-500' : 'border-white/10', 'w-1/2 text-xs bg-transparent focus:outline-none text-slate-300 border px-2 py-2 rounded']" v-model="contact.display_name">
-                            <p class="text-red-500 text-xs my-2" v-if="error.display_name">{{ error.display_name[0] }}</p>
+                            <input type="text" :class="[ error.name ? 'border-red-500' : 'border-white/10', 'w-full text-xs bg-transparent focus:outline-none text-slate-300 border px-2 py-3 rounded']" v-model="group.name">
+                            <p class="text-red-500 text-xs my-2" v-if="error.name">{{ error.name[0] }}</p>
+                        </div>
+                        <div class="form-group">
+                            <label class="block mb-2 text-xs text-slate-300">Image</label>
+                            <input type="file" class="border-white/10 w-full text-xs bg-transparent focus:outline-none text-slate-300 border px-2 py-2.5 rounded" @change="imageUpload">
+                            <div class="preview my-2" v-if="previewImage">
+                                <img :src="previewImage" alt="preview" class="max-w-[100px] min-w-[100px]">
+                            </div>
                         </div>
                         <div class="form-group">
                             <label class="block mb-2 text-xs text-slate-300">Add Participants</label>
                             <div class="user-details py-2" v-for="(user, index) in users" :key="index">
                                 <label class="flex items-start">
-                                    <input type="checkbox" class="w-5 h-5 rounded border border-white/100 bg-transparent mr-4 block" :value="user.id">
+                                    <input :id="'user' + user.id" type="checkbox" class="w-5 h-5 rounded border border-white/10 bg-transparent mr-4 block" :name="group['user_id'+ user.id]" :value="'user_id' + user.id" v-model="group['user_id'+ user.id]">
                                     <div class="details flex items-start">
                                         <img :src="user.avatar" :alt="user.display_name" class="max-w-[25px]" v-if="user.avatar">
                                         <img src="/images/user-icon.png" alt="user" class="max-w-[25px]" v-else>
-                                        <h4 class="text-white text-sm ml-2">{{ user.display_name }}</h4>
+                                        <label :for="'user' + user.id" class="text-white text-sm ml-2">{{ user.display_name }}</label>
                                     </div>
                                 </label>
                             </div>
@@ -33,7 +40,7 @@
                     </div>
                 </form>
             </div>
-            <div id="toast-success" class="flex fixed top-0 right-5 z-50 items-center p-4 mb-4 w-full max-w-xs text-gray-200 rounded gradient-bg border border-white/10 shadow dark:text-gray-400 dark:bg-gray-800 animate__animated animate__fadeInRight" role="alert" v-if="toast">
+            <div id="toast-success" class="flex fixed top-0 right-5 z-50 items-center p-4 mb-4 w-full max-w-xs text-gray-200 rounded gradient-bg border border-white/10 shadow animate__animated animate__fadeInRight" role="alert" v-if="toast">
                 <div class="inline-flex justify-center items-center w-6 h-6 bg-lime-500 rounded-full text-white">
                     <svg aria-hidden="true" class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
                     <span class="sr-only">Check icon</span>
@@ -55,23 +62,37 @@ export default {
     data(){
         return{
             user: {},
+            group: {},
+            groupUsers: {},
             contact: {},
             error: {},
             loading: false,
             toast: false,
+            previewImage: '',
 
         }
     },
     methods:{
-        saveUserDetails(){
-            console.log(this.contact)
-            this.contact.user_one = this.user.id
+        imageUpload(e){
+            this.group.image = e.target.files[0]
+            this.previewImage = URL.createObjectURL(this.group.image)
+        },
+        saveGroupDetails(){
+            this.group.my_id = this.user.id
+            console.log(this.group)
+            let data = new FormData()
+            data.append('name', this.group.name)
+            data.append('image', this.group.image)
+            data.append('my_id', this.group.my_id)
+            data.append('users', [this.group])
             this.loading = true
-            axios.post('/api/add-contact', this.contact)
-            .then(res=>{
+            axios.post('/api/create-group', data, this.group)
+            .then(res=>{ 
                 this.loading = false
+                this.$emit('getGroupList', true)
                 this.Reset()
-                this.toast = 'Contact added successfully.'
+                this.getUserDetails()
+                this.toast = res.data.message
                 setTimeout(()=>{
                     this.toast = false
                 }, 4000)
@@ -82,7 +103,14 @@ export default {
                 {
                     this.error = err.response.data.errors
                 }
-                this.toast = 'Error on contact add.'
+                this.toast = 'Error on chat group creation.'
+                setTimeout(()=>{
+                    this.toast = false
+                }, 4000)
+                if(err.response.status === 400)
+                {
+                    this.toast = err.response.data.message
+                }
                 setTimeout(()=>{
                     this.toast = false
                 }, 4000)
@@ -112,7 +140,7 @@ export default {
     },
     mounted(){
         this.getUserDetails()
-        console.log(this.users)
+        // console.log(this.users)
     }
 
 }
