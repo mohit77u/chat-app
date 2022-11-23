@@ -157,6 +157,11 @@ class ContactListController extends Controller
      */
     public function destroy(ContactList $contactList)
     {
-        //
+        $contactList->delete();
+        // return response
+        return response([
+            'message' => 'User deleted from contact list successfully.',
+        ], 200);
+
     }
 }

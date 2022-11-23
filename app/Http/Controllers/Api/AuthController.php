@@ -96,12 +96,14 @@ class AuthController extends Controller
     // forgot password
     public function logout(Request $request)
     {
-        $token = $request->token;
+        /**
+         * @var User $user
+        */
 
-        $user = User::where('token', $token)->first();
+        $user = Auth::user();
 
         $user->update([
-            'token' => '',
+            'token' => null,
         ]);
 
         return response([

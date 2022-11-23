@@ -2,7 +2,7 @@
     <div class="profile pb-4 pt-24 animate__animated animate__fadeIn min-h-[85vh]">
         <div class="lg:w-6/12 w-full mx-auto">
             <div class="p-6 rounded gradient-bg border border-white/10 max-h-[650px] overflow-auto">
-                <h2 class="text-white text-2xl font-bold mb-3">Create Chat Group</h2>
+                <h2 class="text-white text-2xl font-bold mb-3">Edit Chat Group</h2>
                 <h3 class="text-slate-200 text-xl mb-3">Group Information</h3>
                 <form @submit.prevent="saveGroupDetails">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -22,11 +22,24 @@
                             <label class="block mb-2 text-xs text-slate-300">Add Participants</label>
                             <div class="user-details py-2" v-for="(user, index) in users" :key="index">
                                 <label class="flex items-start">
-                                    <input :id="'user' + user.id" type="checkbox" class="w-5 h-5 rounded border border-white/10 bg-transparent mr-4 block" :name="user.id" :value="user.id" v-model="members">
+                                    <input :id="'user' + user.id" type="checkbox" class="w-5 h-5 rounded border border-white/10 bg-transparent mr-4 block" :name="'member' + user.id" :value="user.id" v-model="members">
                                     <div class="details flex items-start">
                                         <img :src="user.avatar" :alt="user.display_name" class="max-w-[25px]" v-if="user.avatar">
                                         <img src="/images/user-icon.png" alt="user" class="max-w-[25px]" v-else>
                                         <label :for="'user' + user.id" class="text-white text-sm ml-2">{{ user.display_name }}</label>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="block mb-2 text-xs text-slate-300">Group Members</label>
+                            <div class="user-details py-2" v-for="(user, index) in groupMembers" :key="index">
+                                <label class="flex items-start">
+                                    <div class="details flex items-start">
+                                        <img :src="user.avatar" :alt="user.display_name" class="max-w-[25px]" v-if="user.avatar">
+                                        <img src="/images/user-icon.png" alt="user" class="max-w-[25px]" v-else>
+                                        <label :for="'user' + user.id" class="text-white text-sm ml-2">{{ user.name }}</label>
                                     </div>
                                 </label>
                             </div>
@@ -57,21 +70,28 @@
 
 <script>
 export default {
-    name: "CreateGroup",
-    props:['users'],
+    name: "EditGroup",
+    props:['users','user', 'id'],
     data(){
         return{
-            user: {},
+            group: {},
             name: '',
             image: '',
             members: [],
-            groupUsers: {},
+            groupMembers: '',
             contact: {},
             error: {},
             loading: false,
             toast: false,
             previewImage: '',
 
+        }
+    },
+    watch:{
+        id(newVal, oldVal){
+            if (oldVal != newVal){
+                this.getGroupData()
+            }
         }
     },
     methods:{
@@ -118,19 +138,17 @@ export default {
                 }, 4000)
                 
             })
-        }, 
-        getUserDetails(){
-            const token = localStorage.getItem('token');
-            const config = {
-                headers:{
-                    'Authorization': 'Bearer ' + token,
-                }
-            }
-            axios.get('/api/user', config)
-            .then(res=>{
-                const user = res.data.user
-                this.user = user
-            }).catch(err=>{
+        },
+
+        getGroupData(){
+            axios.get('/api/group/' + this.id)
+            .then((res) => {
+                console.log(res.data)
+                this.name = res.data.group.name
+                this.previewImage = res.data.group.image
+                this.members = res.data.group.users
+                this.groupMembers = res.data.users
+            }).catch((err) => {
                 console.log(err)
             })
         },
@@ -141,7 +159,7 @@ export default {
         },
     },
     mounted(){
-        this.getUserDetails()
+        this.getGroupData()
         // console.log(this.users)
     }
 

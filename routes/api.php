@@ -33,7 +33,7 @@ Route::controller(UserController::class)->group(function(){
 Route::controller(AuthController::class)->group(function(){
     Route::post('register', 'register');
     Route::post('login', 'login');
-    Route::post('logout', 'logout')->middleware('auth:api');
+    Route::get('logout', 'logout')->middleware('auth:api');
     Route::post('forgot-password', 'forgotPassword');
     Route::post('reset-password', 'resetPassword');
 });
@@ -48,10 +48,12 @@ Route::controller(ContactListController::class)->group(function(){
     Route::get('contact-list', 'index')->middleware('auth:api');
     Route::post('add-contact', 'store');
     Route::get('contact-list/{contactList}', 'show');
-    Route::post('contact-list/{contactList}/update', 'update');
+    Route::put('contact-list/{contactList}/update', 'update');
+    Route::delete('contact-list/{contactList}/delete', 'destroy');
 });
 
 Route::controller(ChatGroupController::class)->group(function(){
     Route::get('groups', 'index')->middleware('auth:api');
     Route::post('create-group', 'store');
+    Route::get('group/{group}', 'show');
 });

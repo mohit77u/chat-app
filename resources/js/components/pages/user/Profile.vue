@@ -1,5 +1,5 @@
 <template>
-    <div class="profile pb-4 pt-24 animate__animated animate__fadeInRight min-h-[85vh]">
+    <div class="profile pb-4 pt-24 animate__animated animate__fadeIn min-h-[85vh]">
         <div class="lg:w-6/12 w-full mx-auto">
             <div class="p-6 rounded gradient-bg border border-white/10 max-h-[650px] overflow-auto">
                 <h2 class="text-white text-2xl font-bold mb-3">Profile</h2>

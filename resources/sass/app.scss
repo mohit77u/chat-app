@@ -165,10 +165,10 @@ html {
 }
 
 .main-message{
-    .edit{
+    .edit-delete{
         display: none;
     }
-    &:hover .edit{
+    &:hover .edit-delete{
         display: block;
     }
 }

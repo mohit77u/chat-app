@@ -1,5 +1,5 @@
 <template>
-<div class="home-page min-h-screen max-h-screen overflow-auto">
+<div class="home-page min-h-screen max-h-screen overflow-y-auto overflow-x-hidden">
     <section class="min-h-screen backdrop-blur-[50px]">
         <div class="flex flex-wrap gap-y-4">
             <div :class="[menu ? 'sidebar mobile-menu fixed top-0 left-0 z-50 max-h-screen h-full overflow-y-auto' : 'sidebar fixed top-0 md:left-0 left-[-100%] z-50 max-h-screen h-full overflow-y-auto', 'border-r border-white/10 w-64 transition-all duration-500 bg-[#0f1940] md:bg-transparent']">
@@ -7,24 +7,22 @@
                     <div class="flex justify-between items-center">
                         <div class="logo-icon flex items-center">
                             <img src="/images/logo.svg" alt="logo" class="max-w-[40px]">
-                            <p class="text-[12px] md:text-[15px] text-slate-300 ml-2">Chat app, <span> the real thing</span></p>
+                            <p class="text-[12px] md:text-[14px] text-slate-300 ml-2">Chat App, <span> The Real Thing</span></p>
                         </div>
                         <div class="contact-book-icon md:hidden block">
                             <img src="/images/icon-close.png" alt="close" class="max-w-[30px] cursor-pointer" @click="menu = !menu">
                         </div>
-                        <!-- <div class="sub-menu-icon md:block hidden">
-                                <img src="/images/three-dots.png" alt="dots" class="max-w-[26px] cursor-pointer" @click="subMenu = !subMenu">
-                            </div> -->
                     </div>
                 </div>
                 <!-- contact list -->
-                <label class="block text-slate-200 txt-md px-4 mb-4 py-2 border-b border-t border-white/20 ">Contact List</label>
-                <div class="message-box pb-5">
+                <label class="block text-slate-200 text-md px-4 mb-4 py-2 border-b border-t border-white/20 ">Contact List</label>
+                <div class="message-box pb-5" v-if="users.length > 0">
                     <div class="py-1" v-for="(user,index) in users" :key="index">
                         <div class="main-message flex justify-between rounded px-4 relative">
                             <div class="flex cursor-pointer "  @click="getUserMessage(user)">
                                 <div class="left mr-2">
-                                    <img src="/images/user-icon.png" alt="user" class="max-w-[25px] max-h-[25px] rounded-full">
+                                    <img :src="user.avatar" alt="user" class="max-w-[25px] max-h-[25px] rounded-full" v-if="user.avatar">
+                                    <img src="/images/user-icon.png" alt="user" class="max-w-[25px] max-h-[25px] rounded-full" v-else>
                                     <!-- <img src="/images/icon-boy.png" alt="user" class="max-w-[30px] max-h-[65px] rounded-full"> -->
                                 </div>
                                 <div class="right">
@@ -35,14 +33,20 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="edit cursor-pointer" @click="editContact(user.contactList_id, 'edit-contact')">
-                                <img src="https://img.icons8.com/external-becris-lineal-becris/48/ffffff/external-edit-mintab-for-ios-becris-lineal-becris.png" alt="dots" class="max-w-[15px] opacity-50" style="filter: grayscale(1)">
+                            <div class="edit-delete mt-[-5px]">
+                                <div class="cursor-pointer ">
+                                    <img src="https://img.icons8.com/external-becris-lineal-becris/48/ffffff/external-edit-mintab-for-ios-becris-lineal-becris.png" alt="dots" class="max-w-[15px] opacity-50 inline mr-2" style="filter: grayscale(1)" @click="editData(user.contactList_id, 'edit-contact')">
+                                    <img src="/images/icon-delete.png" alt="delete" class="max-w-[15px] inline" @click="deleteUser = user; stepChange('delete-contact')">
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                <div class="message-box pb-5" v-else>
+                    <h5 class="px-4 text-white/60 transition-all duration-150 text-sm">No contact yet in contact list</h5>
+                </div>
                 <!-- groups -->
-                <label class="block text-slate-200 txt-md px-4 mb-4 py-2 border-b border-t border-white/20 ">Groups</label>
+                <label class="block text-slate-200 text-md px-4 mb-4 py-2 border-b border-t border-white/20 ">Groups</label>
                 <div class="message-box pb-5">
                     <div class="py-1" v-for="(group,index) in groups" :key="index">
                         <div class="main-message flex justify-between rounded px-4">
@@ -59,7 +63,7 @@
                                 </div>
                             </div>
                             <div class="edit cursor-pointer">
-                                <img src="https://img.icons8.com/external-becris-lineal-becris/48/ffffff/external-edit-mintab-for-ios-becris-lineal-becris.png" alt="dots" class="max-w-[15px] opacity-50" style="filter: grayscale(1)">
+                                <img src="https://img.icons8.com/external-becris-lineal-becris/48/ffffff/external-edit-mintab-for-ios-becris-lineal-becris.png" alt="dots" class="max-w-[15px] opacity-50" style="filter: grayscale(1)" @click="editData(group.id, 'edit-group')">
                             </div>
                             
                         </div>
@@ -73,14 +77,15 @@
                             <img src="/images/icon-boy.png" alt="boy" class="max-w-[50px]">
                             <div class="name-time ml-2 mt-1">
                                 <h6 class="text-md text-white">{{ currentUser.display_name }}</h6>
-                                <p class="text-xs text-gray-300">Last seen 1 min ago</p>
+                                <p class="text-xs text-gray-300">Last seen {{ moment(currentUser.updated_at).fromNow() }}</p>
                                 <!-- <p class="text-xs text-gray-300">Last seen {{ moment(currentUser.created_at).fromNow() }}</p> -->
                             </div>
                         </div>
                     </div>
                     <div class="flex items-center justify-end">
                         <div class="sub-menu-icon">
-                            <img src="/images/icon-settings.png" alt="dots" class="max-w-[30px] cursor-pointer" @click="subMenu = !subMenu">
+                            <img :src="loggedInUser.avatar" :alt="loggedInUser.name" class="max-w-[30px] cursor-pointer" @click="subMenu = !subMenu" v-if="loggedInUser.avatar">
+                            <img src="/images/icon-settings.png" alt="dots" class="max-w-[30px] cursor-pointer" @click="subMenu = !subMenu" v-else>
                         </div>
                         <div class="left ml-4 block md:hidden">
                             <img src="/images/icon-menu.svg" alt="menu" class="cursor-pointer" @click="menu = !menu">
@@ -89,7 +94,7 @@
                             <button class="py-2 text-slate-300 text-sm block w-full text-left hover:bg-[#fff3] border-b border-white/10 px-3" @click="stepChange('profile')">Profile</button>
                             <button class="py-2 text-slate-300 text-sm block w-full text-left hover:bg-[#fff3] border-b border-white/10 px-3" @click="stepChange('add-contact')">Add New Contact</button>
                             <button class="py-2 text-slate-300 text-sm block w-full text-left hover:bg-[#fff3] border-b border-white/10 px-3" @click="stepChange('create-group')">Create New Group</button>
-                            <button class="py-2 text-slate-300 text-sm block w-full text-left hover:bg-[#fff3] px-3" @click="LogoutUser">Logout</button>
+                            <button class="py-2 text-slate-300 text-sm block w-full text-left hover:bg-[#fff3] px-3" @click="LogoutUser()">Logout</button>
                         </div>
                     </div>
                 </div>
@@ -176,12 +181,39 @@
 
                 <!-- edit contact -->
                 <div v-if="step === 'edit-contact'">
-                    <EditContact :user="loggedInUser" :id="edit" />
+                    <EditContact :user="loggedInUser" :id="edit" @getContactList="getContactList" />
                 </div>
 
                 <!-- create group -->
                 <div v-if="step === 'create-group'">
                     <CreateGroup :users="users" @getGroupList="getGroupList" />
+                </div>
+
+                 <!-- create group -->
+                 <div v-if="step === 'edit-group'">
+                    <EditGroup :users="users" :user="loggedInUser" :id="edit" @getGroupList="getGroupList" />
+                </div>
+
+                <!-- delete contact -->
+                <div v-if="step === 'delete-contact'">
+                    <div id="popup-modal" tabindex="-1" class="overflow-y-auto overflow-x-hidden absolute top-0 right-0 left-0 z-50 p-4 md:inset-0 h-full bg-[#0f1940]">
+                        <div class="relative w-full max-w-md h-full mx-auto flex justify-center items-center">
+                            <div class="relative gradient-bg border border-white/10 rounded-lg shadow animate__animated animate__fadeIn">
+                                <button type="button" class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-800 dark:hover:text-white" @click="deleteUser = ''; stepChange('message')">
+                                    <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                                    <span class="sr-only">Close modal</span>
+                                </button>
+                                <div class="p-6 text-center">
+                                    <svg aria-hidden="true" class="mx-auto mb-4 w-14 h-14 text-gray-400 dark:text-gray-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                    <h3 class="mb-5 text-md font-normal text-gray-500 dark:text-gray-400">Are you sure you want to delete this contact named {{ deleteUser.display_name }}?</h3>
+                                    <button type="button" class="text-white bg-red-600 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 dark:focus:ring-red-800 font-medium rounded-lg text-sm inline-flex items-center px-5 py-2.5 text-center mr-2" @click="deleteContactList()">
+                                        Yes, I'm sure
+                                    </button>
+                                    <button type="button" class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600" @click="deleteUser = ''; stepChange('message')">No, cancel</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- loader -->
@@ -191,6 +223,19 @@
                             <div class="cssLoader17"></div>
                         </div>
                     </div>
+                </div>
+
+                <!-- toast -->
+                <div id="toast-success" class="flex fixed right-10 top-16 z-50 items-center p-4 mb-4 w-full max-w-xs text-gray-200 rounded gradient-bg border border-white/10 shadow  animate__animated animate__fadeInRight" role="alert" v-if="toast">
+                    <div class="inline-flex justify-center items-center w-6 h-6 bg-lime-500 rounded-full text-white">
+                        <svg aria-hidden="true" class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                        <span class="sr-only">Check icon</span>
+                    </div>
+                    <div class="ml-3 text-sm font-normal text-gray-200">{{ toast }}</div>
+                    <button type="button" class="ml-auto -mx-1.5 -my-1.5  text-white" data-dismiss-target="#toast-success" aria-label="Close" @click="toast = !toast">
+                        <span class="sr-only">Close</span>
+                        <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                    </button>
                 </div>
 
             </div>
@@ -206,13 +251,15 @@ import Profile from './user/Profile.vue'
 import AddContact from './user/AddContact.vue'
 import EditContact from './user/EditContact.vue'
 import CreateGroup from './user/CreateGroup.vue'
+import EditGroup from './user/EditGroup.vue'
 export default {
     name: 'Home',
     components: {
         Profile,
         AddContact,
+        EditContact,
+        EditGroup,
         CreateGroup,
-        EditContact
     },
     data() {
         return {
@@ -231,6 +278,8 @@ export default {
             groups: {},
             loggedInUser: {},
             edit: '',
+            deleteUser: '',
+            toast: false,
         }
     },
     methods: {
@@ -253,7 +302,6 @@ export default {
         attachmentUpload(e) {
             this.attachments = e.target.files[0]
             this.previewAttachement = URL.createObjectURL(this.attachments)
-
         },
         sendMessage() {
             let data = new FormData();
@@ -288,7 +336,7 @@ export default {
         getUserMessage(user) {
             this.step = 'message'
             this.subMenu = false
-            this.loading = true
+            // this.loading = true
             if (user) {
                 this.currentUser = user
                 this.to_user_id = user.id
@@ -303,12 +351,12 @@ export default {
                     this.menu = false
                     setTimeout(() => {
                         this.scrollToElement()
-                        this.loading = false
+                        // this.loading = false
                     }, 500)
 
                 }).catch(err => {
                     console.log(err)
-                    this.loading = false
+                    // this.loading = false
                 })
         },
         getLoggedInUser() {
@@ -328,11 +376,24 @@ export default {
                 ])
         },
         LogoutUser() {
-            localStorage.removeItem('token')
-            this.$router.push('/login')
+            const token = localStorage.getItem('token');
+            const config = {
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                }
+            } 
+            axios.get('/api/logout', config)
+            .then(res => {
+                localStorage.removeItem('token')
+                this.$router.push('/login')
+                console.log(res)
+            }).catch(err => {
+                console.log(err)
+            })
+
         },
-        stepChange(profile) {
-            this.step = profile
+        stepChange(step) {
+            this.step = step
             this.subMenu = false
         },
         scrollToElement() {
@@ -355,6 +416,7 @@ export default {
             if(refresh){
                 console.log(refresh)
                 this.getGroups()
+                this.getUsers()
             }
         },
         getGroups(){
@@ -371,9 +433,28 @@ export default {
                 console.log(err)
             })
         },
-        editContact(id, step){
+        editData(id, step){
             this.edit = id
             this.step = step
+        },
+        deleteContactList(){
+            axios.delete('/api/contact-list/' + this.deleteUser.contactList_id + '/delete')
+            .then((res) => {
+                this.deleteUser = ''
+                this.step = 'message'
+                this.getUsers()
+                this.toast = res.data.message
+                setTimeout(()=>{
+                    this.toast = false
+                }, 4000)
+
+            }).catch((err) => {
+                this.toast = 'Error on contact delete.'
+                setTimeout(()=>{
+                    this.toast = false
+                }, 4000)
+                
+            })
         }
     },
     mounted() {

@@ -3,7 +3,7 @@
         <div class="min-w-[330px]">
             <div class="text-center mb-4">
                 <img src="/images/logo.svg" alt="logo" class="mx-auto max-w-[60px]">
-                <p class="text-[10px] text-slate-300">Chat app, the real thing</p>
+                <p class="text-[10px] text-slate-300">Chat App, The Real Thing</p>
             </div>
             <div class="p-6 rounded gradient-bg border border-white/10">
                 <form @submit.prevent="SubmitForm">

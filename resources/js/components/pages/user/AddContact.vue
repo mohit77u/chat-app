@@ -1,5 +1,5 @@
 <template>
-    <div class="profile pb-4 pt-24 animate__animated animate__fadeInRight min-h-[85vh]">
+    <div class="profile pb-4 pt-24 animate__animated animate__fadeIn min-h-[85vh]">
         <div class="lg:w-6/12 w-full mx-auto">
             <div class="p-6 rounded gradient-bg border border-white/10 max-h-[650px] overflow-auto">
                 <h2 class="text-white text-2xl font-bold mb-3">Add New Contact</h2>
@@ -25,7 +25,7 @@
                     </div>
                 </form>
             </div>
-            <div id="toast-success" class="flex fixed top-0 right-5 z-50 items-center p-4 mb-4 w-full max-w-xs text-gray-200 rounded gradient-bg border border-white/10 shadow  animate__animated animate__fadeInRight" role="alert" v-if="toast">
+            <div id="toast-success" class="flex fixed right-10 top-16 z-50 items-center p-4 mb-4 w-full max-w-xs text-gray-200 rounded gradient-bg border border-white/10 shadow  animate__animated animate__fadeInRight" role="alert" v-if="toast">
                 <div class="inline-flex justify-center items-center w-6 h-6 bg-lime-500 rounded-full text-white">
                     <svg aria-hidden="true" class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
                     <span class="sr-only">Check icon</span>
@@ -60,19 +60,19 @@ export default {
             this.contact.user_one = this.user.id
             this.loading = true
             axios.post('/api/add-contact', this.contact)
-            .then(res=>{
+            .then((res) => {
                 this.loading = false
                 this.$emit('getContactList', true)
                 this.Reset()
                 this.getUserDetails()
-                this.toast = 'Contact added successfully.'
+                this.toast = res.data.message
                 setTimeout(()=>{
                     this.toast = false
                 }, 4000)
                 
-            }).catch(err=>{
+            }).catch((err) => {
                 this.loading = false
-                if(err.response.status === 422)
+                if(err.response.data.status === 422)
                 {
                     this.error = err.response.data.errors
                 }
@@ -83,22 +83,7 @@ export default {
                 
             })
 
-        }, 
-        // getUserDetails(){
-        //     const token = localStorage.getItem('token');
-        //     const config = {
-        //         headers:{
-        //             'Authorization': 'Bearer ' + token,
-        //         }
-        //     }
-        //     axios.get('/api/user', config)
-        //     .then(res=>{
-        //         const user = res.data.user
-        //         this.user = user
-        //     }).catch(err=>[
-        //         console.log(err)
-        //     ])
-        // },
+        },
 
         // Reset
         Reset(){

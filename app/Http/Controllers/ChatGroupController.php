@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\ChatGroup;
+use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -26,25 +27,15 @@ class ChatGroupController extends Controller
         $input = $request->validate([
             'name' => 'required',
         ]);
-
-        // dd($request->all());
-        $userIds = $request->users;
-        $users = [];
-
-        foreach ($userIds as $key => $value)
-        {
-            $id = substr($key, 7);
-            $users[] = $id;
-        }
-        dd($users);
+        
+        $userIds = [$request->users];
+        $users = explode(',', $userIds[0]);
 
         $count = count($users);
 
         if($count >= 2)
         {
-            $users = implode(', ', $users);
-            $users = $users . ', ' . $request->my_id;
-
+            $users = $userIds[0];
             // group image
             if(isset($request->image))
             {
@@ -64,10 +55,12 @@ class ChatGroupController extends Controller
                 // store value
                 $input['image'] = $filePath;
             }
+
+            // dd($input);
     
             ChatGroup::create([
                 'name' => $input['name'],
-                'image' => $input['image'],
+                'image' => isset($input['image']) ? $input['image'] : null,
                 'users' => $users,
             ]);
     
@@ -81,5 +74,22 @@ class ChatGroupController extends Controller
                 'message' => 'Minimum of two group members required to create a chat group',
             ], 400);
         }
+    }
+
+     /**
+     * Display the specified resource.
+     *
+     * @param  \App\Models\ChatGroup  $ChatGroup
+     * @return \Illuminate\Http\Response
+     */
+    public function show(ChatGroup $group)
+    {
+        $groupUsers = explode(', ', $group->users);
+        // dd($groupUsers);
+        $users = User::whereIn('id', $groupUsers)->get();
+        return response([
+            'group' => $group,
+            'users' => $users,
+        ]);
     }
 }
