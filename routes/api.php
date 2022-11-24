@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\ChatGroupController;
 use App\Http\Controllers\ContactListController;
+use App\Http\Controllers\GroupMessagesController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -44,6 +45,11 @@ Route::controller(MessageController::class)->group(function(){
     Route::post('user-messages', 'userMessages');
 });
 
+Route::controller(GroupMessagesController::class)->group(function(){
+    Route::post('group-message', 'store');
+    Route::post('group-messages', 'index');
+});
+
 Route::controller(ContactListController::class)->group(function(){
     Route::get('contact-list', 'index')->middleware('auth:api');
     Route::post('add-contact', 'store');
@@ -54,6 +60,9 @@ Route::controller(ContactListController::class)->group(function(){
 
 Route::controller(ChatGroupController::class)->group(function(){
     Route::get('groups', 'index')->middleware('auth:api');
-    Route::post('create-group', 'store');
+    Route::post('create-group', 'store')->middleware('auth:api');
     Route::get('group/{group}', 'show');
+    Route::post('group/{id}/update', 'update')->middleware('auth:api');
+    Route::delete('group/{group}/delete', 'destroy');
+    Route::post('remove-user/group', 'removeUser');
 });

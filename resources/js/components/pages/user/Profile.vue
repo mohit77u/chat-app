@@ -8,22 +8,22 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div class="form-group">
                             <label class="block mb-2 text-xs text-slate-300">Name</label>
-                            <input type="text" :class="[ error.name ? 'border-red-500' : 'border-white/10', 'w-full text-xs bg-transparent focus:outline-none text-slate-300 border px-2 py-2 rounded']" v-model="user.name">
+                            <input type="text" :class="[ error.name ? 'border-red-500' : 'border-white/10', 'w-full text-xs bg-transparent focus:outline-none text-slate-300 border px-2 py-2 rounded']" v-model="loggedInUser.name">
                             <p class="text-red-500 text-xs my-2" v-if="error.name">{{ error.name[0] }}</p>
                         </div>
                         <div class="form-group">
                             <label class="block mb-2 text-xs text-slate-300">Email</label>
-                            <input type="email" :class="[ error.email ? 'border-red-500' : 'border-white/10', 'w-full text-xs bg-transparent focus:outline-none text-slate-300 border px-2 py-2 rounded']" v-model="user.email">
+                            <input type="email" :class="[ error.email ? 'border-red-500' : 'border-white/10', 'w-full text-xs bg-transparent focus:outline-none text-slate-300 border px-2 py-2 rounded']" v-model="loggedInUser.email">
                             <p class="text-red-500 text-xs my-2" v-if="error.email">{{ error.email[0] }}</p>
                         </div>
                         <div class="form-group">
                             <label class="block mb-2 text-xs text-slate-300">Password</label>
-                            <input type="password" :class="[ error.password ? 'border-red-500' : 'border-white/10', 'w-full text-xs bg-transparent focus:outline-none text-slate-300 border px-2 py-2 rounded']" v-model="user.password">
+                            <input type="password" :class="[ error.password ? 'border-red-500' : 'border-white/10', 'w-full text-xs bg-transparent focus:outline-none text-slate-300 border px-2 py-2 rounded']" v-model="loggedInUser.password">
                             <p class="text-red-500 text-xs my-2" v-if="error.password">{{ error.password[0] }}</p>
                         </div>
                         <div class="form-group">
                             <label class="block mb-2 text-xs text-slate-300">Password Confirmation</label>
-                            <input type="password" :class="[ error.password_confirmation ? 'border-red-500' : 'border-white/10', 'w-full text-xs bg-transparent focus:outline-none text-slate-300 border px-2 py-2 rounded']" v-model="user.password_confirmation">
+                            <input type="password" :class="[ error.password_confirmation ? 'border-red-500' : 'border-white/10', 'w-full text-xs bg-transparent focus:outline-none text-slate-300 border px-2 py-2 rounded']" v-model="loggedInUser.password_confirmation">
                             <p class="text-red-500 text-xs my-2" v-if="error.password_confirmation">{{ error.password_confirmation[0] }}</p>
                         </div>
                         <div class="form-group">
@@ -34,7 +34,7 @@
                         </div>
                     </div>
                     <div class="my-3">
-                        <img :src="previewImage ? previewImage : user.avatar" alt="avatar" v-if="previewImage || user.avatar" class="max-w-[70px]" />
+                        <img :src="previewImage ? previewImage : loggedInUser.avatar" alt="avatar" v-if="previewImage || loggedInUser.avatar" class="max-w-[70px]" />
                     </div>
                     <div class="form-group my-6">
                         <button type="submit" class="w-auto text-sm bg-lime-500 text-center text-white px-5 py-2 rounded flex justify-center items-center" :disabled="loading">
@@ -44,7 +44,7 @@
                     </div>
                 </form>
             </div>
-            <div id="toast-success" class="flex fixed top-0 right-5 z-50 items-center p-4 mb-4 w-full max-w-xs text-gray-200 rounded gradient-bg border border-white/10 shadow dark:text-gray-400 dark:bg-gray-800" role="alert" v-if="toast">
+            <div id="toast-success" class="flex fixed top-16 right-10 z-50 items-center p-4 mb-4 w-full max-w-xs text-gray-200 rounded gradient-bg border border-white/10 shadow dark:text-gray-400" role="alert" v-if="toast">
                 <div class="inline-flex justify-center items-center w-6 h-6 bg-lime-500 rounded-full text-white">
                     <svg aria-hidden="true" class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
                     <span class="sr-only">Check icon</span>
@@ -70,24 +70,25 @@ export default {
             error: {},
             loading: false,
             toast: false,
+            loggedInUser: '',
 
         }
     },
     methods:{
         UploadAvatar(e){
-            this.user.avatar = e.target.files[0]
-            this.previewImage = URL.createObjectURL(this.user.avatar)
+            this.loggedInUser.avatar = e.target.files[0]
+            this.previewImage = URL.createObjectURL(this.loggedInUser.avatar)
 
         },
         saveUserDetails(){
-            console.log(this.user)
             this.loading = true
+            this.error = ''
             let data = new FormData();
-            data.append('id', this.user.id);
-            data.append('name', this.user.name);
-            data.append('email', this.user.email);
-            data.append('avatar', this.user.avatar);
-            data.append('password', this.user.password);
+            data.append('id', this.loggedInUser.id);
+            data.append('name', this.loggedInUser.name);
+            data.append('email', this.loggedInUser.email);
+            data.append('avatar', this.loggedInUser.avatar);
+            data.append('password', this.loggedInUser.password);
             axios.post('/api/update-user', data)
             .then(res=>{
                 this.loading = false
@@ -109,24 +110,24 @@ export default {
                 }, 4000)
             })
         }, 
-        // getUserDetails(){
-        //     const token = localStorage.getItem('token');
-        //     const config = {
-        //         headers:{
-        //             'Authorization': 'Bearer ' + token,
-        //         }
-        //     }
-        //     axios.get('/api/user', config)
-        //     .then(res=>{
-        //         const user = res.data.user
-        //         this.user = user
-        //     }).catch(err=>[
-        //         console.log(err)
-        //     ])
-        // },
+        getUserDetails(){
+            const token = localStorage.getItem('token');
+            const config = {
+                headers:{
+                    'Authorization': 'Bearer ' + token,
+                }
+            }
+            axios.get('/api/user', config)
+            .then(res=>{
+                const user = res.data.user
+                this.loggedInUser = user
+            }).catch(err=>[
+                console.log(err)
+            ])
+        },
     },
     mounted(){
-        // this.getUserDetails()
+        this.getUserDetails()
     }
 
 }

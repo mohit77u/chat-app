@@ -2,21 +2,32 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Message;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Models\GroupMessages;
 
-class MessageController extends Controller
+class GroupMessagesController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-       
+        $groupId = $request->groupId;
+        // dd($groupId);
+
+        $messages = GroupMessages::where('group_id', $groupId)->latest()->get();
+        $messages = $messages->sortBy('created_at');
+        
+        $messages = $messages->groupBy(function($item){
+          return date('d F Y', strtotime($item['created_at']));
+        });
+
+        return response([
+            'messages' => $messages,
+        ]);
     }
 
     /**
@@ -39,13 +50,15 @@ class MessageController extends Controller
     {
         $message = $request->validate([
             'message' => 'required',
-            'from_user_id' => 'required',
-            'to_user_id' => 'required',
+            'user_id' => 'required',
+            'group_id' => 'required',
         ]);
+
+        // dd($request->all());
 
         if($request->message != 'null')
         {
-            Message::create($message);
+            GroupMessages::create($message);
         }
 
         $attachments = $request->attachments;
@@ -57,7 +70,7 @@ class MessageController extends Controller
             $baseNamefile = pathinfo($attachments->getClientOriginalName(), PATHINFO_FILENAME);
             $name = Str::slug($baseNamefile, '-');
             $fileName = $name.'.'.$extension;
-            $destinationFilePath = '/uploads/messages/attachements/';
+            $destinationFilePath = '/uploads/group-messages/attachments/';
            
             // file path
             $filePath = $destinationFilePath . $fileName;
@@ -73,9 +86,9 @@ class MessageController extends Controller
                 $type = 'docs';
             } 
             // store value
-            Message::create([
-                'from_user_id'  => $message['from_user_id'],
-                'to_user_id'    => $message['to_user_id'],
+            GroupMessages::create([
+                'user_id'       => $message['user_id'],
+                'group_id'      => $message['group_id'],
                 'type'          => $type,
                 'message'       => $filePath,
             ]);
@@ -88,10 +101,10 @@ class MessageController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Message  $message
+     * @param  \App\Models\GroupMessages  $groupMessages
      * @return \Illuminate\Http\Response
      */
-    public function show(Message $message)
+    public function show(GroupMessages $groupMessages)
     {
         //
     }
@@ -99,10 +112,10 @@ class MessageController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Message  $message
+     * @param  \App\Models\GroupMessages  $groupMessages
      * @return \Illuminate\Http\Response
      */
-    public function edit(Message $message)
+    public function edit(GroupMessages $groupMessages)
     {
         //
     }
@@ -111,10 +124,10 @@ class MessageController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Message  $message
+     * @param  \App\Models\GroupMessages  $groupMessages
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Message $message)
+    public function update(Request $request, GroupMessages $groupMessages)
     {
         //
     }
@@ -122,36 +135,11 @@ class MessageController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Message  $message
+     * @param  \App\Models\GroupMessages  $groupMessages
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Message $message)
+    public function destroy(GroupMessages $groupMessages)
     {
         //
     }
-
-    // get user messages
-    public function userMessages(Request $request)
-    {
-        $messagesOne = Message::where('from_user_id', $request->from_user_id)->where('to_user_id', $request->to_user_id)->latest()->get()->toArray();
-        $messagesTwo = Message::where('from_user_id', $request->to_user_id)->where('to_user_id', $request->from_user_id)->latest()->get()->toArray();
-
-        $messages = array_merge($messagesOne, $messagesTwo);
-
-        $messages = array_values(Arr::sort($messages, function ($value) {
-            return $value['created_at'];
-        }));
-
-        $messages = collect($messages);
-        $messages = $messages->sortBy('created_at');
-        
-        $messages = $messages->groupBy(function($item){
-          return date('d F Y', strtotime($item['created_at']));
-        });
-
-        return response([
-            'user_messages' => $messages,
-        ]);
-    }
-
 }

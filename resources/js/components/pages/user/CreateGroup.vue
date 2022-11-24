@@ -20,15 +20,21 @@
                         </div>
                         <div class="form-group">
                             <label class="block mb-2 text-xs text-slate-300">Add Participants</label>
-                            <div class="user-details py-2" v-for="(user, index) in users" :key="index">
-                                <label class="flex items-start">
-                                    <input :id="'user' + user.id" type="checkbox" class="w-5 h-5 rounded border border-white/10 bg-transparent mr-4 block" :name="user.id" :value="user.id" v-model="members">
-                                    <div class="details flex items-start">
-                                        <img :src="user.avatar" :alt="user.display_name" class="max-w-[25px]" v-if="user.avatar">
-                                        <img src="/images/user-icon.png" alt="user" class="max-w-[25px]" v-else>
-                                        <label :for="'user' + user.id" class="text-white text-sm ml-2">{{ user.display_name }}</label>
-                                    </div>
-                                </label>
+                            <div class="user-details py-2" >
+                                <ul class="text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 dark:bg-transparent dark:border-gray-600 dark:text-white">
+                                    <li :class="[index == users.length - 1 ? 'border-b-0' : 'border-b border-gray-200', 'w-full rounded-t-lg dark:border-gray-600']" v-for="(user, index) in users" :key="index">
+                                        <div class="flex items-center pl-3">
+                                            <input :id="'user' + user.id" type="checkbox" :value="user.id" v-model="members" class="w-4 h-4 text-blue-600 bg-gray-100 rounded border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+                                            <label class="flex items-center py-3 ml-2 w-full text-sm font-medium text-gray-900 dark:text-gray-300">
+                                                <div class="details flex items-start">
+                                                    <img :src="user.avatar" :alt="user.display_name" class="w-5" v-if="user.avatar">
+                                                    <img src="/images/user-icon.png" alt="user" class="w-5" v-else>
+                                                    <label :for="'user' + user.id" class="text-white text-sm ml-2">{{ user.display_name }}</label>
+                                                </div>
+                                            </label>
+                                        </div>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
                     </div>
@@ -80,15 +86,22 @@ export default {
             this.previewImage = URL.createObjectURL(this.image)
         },
         saveGroupDetails(){
+            this.error = ''
             console.log(this.members)
-            this.members.push(this.user.id)
+            // this.members.push(this.user.id)
             let data = new FormData()
             data.append('name', this.name)
             data.append('image', this.image)
             // data.append('my_id', this.group.my_id)
             data.append('users', this.members)
             this.loading = true
-            axios.post('/api/create-group', data, this.group)
+            const token = localStorage.getItem('token');
+            const config = {
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                }
+            }
+            axios.post('/api/create-group', data, config)
             .then(res=>{ 
                 this.loading = false
                 this.$emit('getGroupList', true)

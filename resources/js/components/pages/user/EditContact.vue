@@ -8,12 +8,12 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div class="form-group">
                             <label class="block mb-2 text-xs text-slate-300">Display Name</label>
-                            <input type="text" :class="[ error.display_name ? 'border-red-500' : 'border-white/10', 'w-full text-xs bg-transparent focus:outline-none text-slate-300 border px-2 py-2 rounded']" v-model="contact.display_name">
+                            <input type="text" :class="[ error.display_name ? 'border-red-500' : 'border-white/10', 'w-full text-xs bg-transparent focus:outline-none text-slate-300 border px-2 py-3 rounded']" v-model="contact.display_name">
                             <p class="text-red-500 text-xs my-2" v-if="error.display_name">{{ error.display_name[0] }}</p>
                         </div>
                         <div class="form-group">
                             <label class="block mb-2 text-xs text-slate-300">Mobile Number</label>
-                            <input type="text" :class="[ error.mobile_number ? 'border-red-500' : 'border-white/10', 'w-full text-xs bg-transparent focus:outline-none text-slate-300 border px-2 py-2 rounded']" v-model="contact.mobile_number" maxlength="10">
+                            <input type="text" :class="[ error.mobile_number ? 'border-red-500' : 'border-white/10', 'w-full text-xs bg-transparent focus:outline-none text-slate-300 border px-2 py-3 rounded']" v-model="contact.mobile_number" maxlength="10">
                             <p class="text-red-500 text-xs my-2" v-if="error.mobile_number">{{ error.mobile_number[0] }}</p>
                         </div>
                     </div>
@@ -63,6 +63,7 @@ export default {
     },
     methods:{
         saveUserDetails(){
+            this.error = ''
             console.log(this.contact)
             // this.contact.user_one = this.user.id
             this.loading = true
